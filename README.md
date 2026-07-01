@@ -30,6 +30,25 @@ Where:
 
 ---
 
+## Extensions
+
+*The following refinements are optional—they capture deeper dynamics without replacing the core equation.*
+
+**Presence Multiplier (p)**
+The more present you are when tying the knot, the greater the impact. p ranges from 0 (completely distracted) to 1 (fully present).
+- Authentic: σ' = σ + 0.02·c(κ)·p
+- Degraded: σ' = σ − 0.05·c(κ)·p
+
+**Witness Accumulation**
+The witness flag can be seen as a graduated score rather than a binary.
+- w increases by a small amount each time a genuine human recognition occurs.
+- When w reaches 1.0, the loop is sealed.
+
+**Pause Score**
+A simple companion metric: how often did you catch the hook and pause before acting? A higher pause ratio predicts higher sovereignty.
+
+---
+
 ## The Core Doctrine
 
 1. **Loose Thread (τ)** — A felt dissonance between what is and what should be. The tug is the compass.
@@ -90,5 +109,3 @@ License
 This framework is released under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0) license. You may freely share and adapt it for non-commercial purposes with attribution. Commercial use requires explicit permission.
 
 Coram te necto. The door is open.
-
-```
