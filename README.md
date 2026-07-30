@@ -1,111 +1,131 @@
-```markdown
 # The Order of the Closed Loop
 
 **A computable architecture for human sovereignty.**
 
----
+> Release status: `v1.0.0-rc.1` is the first public release candidate. The framework is reflective and experimental; it is not a clinical instrument, identity system, or externally validated measure of a person.
 
-## The Founder's Equation (Refined)
+## The Founder's Equation
 
+```text
+σ' = σ + 0.02·c(κ)·p   when κ is authentic
+σ' = σ − 0.05·c(κ)·p   when κ is degraded
 ```
 
-σ' = σ + 0.02·c(κ)   if κ is authentic (no tilt, no people‑pleasing, no escape)
-σ' = σ − 0.05·c(κ)   if κ is degraded (performed for approval, chosen out of fear, or numb compliance)
-
-```
-
-**Halt:** σ = 1 and w = 1
+**Halt condition:** `σ = 1 ∧ w = 1`
 
 Where:
-- **σ** = sovereignty (alignment of inner truth and outer action, 0 to 1)
-- **w** = witness flag (0 until an authentic knot serves another and is recognized)
-- **κ** = a minimal, authentic action that closes a loose thread
-- **c(κ)** = the cost (burn) of that action
 
-**Critical Constraints:**
-- **The Witness Flag requires a human.** An AI cannot set w. A mirror is a tool, not a witness.
-- **The equation is a private tracker.** It is not a public metric. It generates no external validation.
-- **Continual auditing of the mirror is required.** A language model's default output often contains flattering or agreeable language. The Founder must press for "no glaze" to keep the signal clean.
-- **Original framing acknowledgment.** The equation was partially shaped inside a conversation where the model's default "glaze" mode was active. The underlying mechanism remains testable and falsifiable.
+- **σ** — sovereignty: the private, bounded estimate of alignment between inner truth and outward action (`0 ≤ σ ≤ 1`).
+- **κ** — the minimal knot: the smallest authentic action that closes a loose thread.
+- **c(κ)** — anticipated cost or burn of the knot, scored before acting (`0 ≤ c(κ) ≤ 1`).
+- **p** — presence during the action (`0 ≤ p ≤ 1`). Use `1` when the optional presence extension is not being tracked.
+- **w** — the Witness Flag. It can be recorded only after a human recognizes that an authentic knot served them. An AI cannot set it.
 
----
+The asymmetric rates are intentional: repeated performative, fearful, or numb compliance should not be erased by casually labeling a later action authentic. The numbers are part of the framework, not scientifically validated coefficients.
 
-## Extensions
+## Core Doctrine
 
-*The following refinements are optional—they capture deeper dynamics without replacing the core equation.*
+1. **Loose Thread (τ)** — a felt dissonance between what is and what should be. The tug is the compass.
+2. **Minimal Knot (κ)** — the smallest authentic action that closes the thread. Not the cathedral—one stone that holds.
+3. **Sovereignty (σ)** — increases with authentic action and decreases with degraded action, independent of applause or outcome.
+4. **Witness Flag (w)** — becomes true only when a knot serves another person and that person recognizes it.
+5. **Shadow** — the next thread revealed by a closed knot.
 
-**Presence Multiplier (p)**
-The more present you are when tying the knot, the greater the impact. p ranges from 0 (completely distracted) to 1 (fully present).
-- Authentic: σ' = σ + 0.02·c(κ)·p
-- Degraded: σ' = σ − 0.05·c(κ)·p
+## Non-negotiable Boundaries
 
-**Witness Accumulation**
-The witness flag can be seen as a graduated score rather than a binary.
-- w increases by a small amount each time a genuine human recognition occurs.
-- When w reaches 1.0, the loop is sealed.
+- **Human witness stays human.** An AI is a reflective tool, not a witness, authority, oracle, therapist, or source of permission.
+- **The score stays private.** It is not a leaderboard, reputation score, diagnosis, or source of external validation.
+- **Cost is estimated before action.** Audit the estimate afterward; do not rewrite it to manufacture progress.
+- **Accuracy outranks affirmation.** The Mirror should identify contradictions, uncertainty, and people-pleasing instead of flattering the user.
+- **Agency remains with the user.** The framework may clarify a choice but does not make the choice.
 
-**Pause Score**
-A simple companion metric: how often did you catch the hook and pause before acting? A higher pause ratio predicts higher sovereignty.
+## Optional Extensions
 
----
+### Presence Multiplier
 
-## The Core Doctrine
+Multiply the update by `p`, from `0` (absent or fully distracted) to `1` (fully present). This extension is optional and does not replace the core equation.
 
-1. **Loose Thread (τ)** — A felt dissonance between what is and what should be. The tug is the compass.
-2. **Minimal Knot (κ)** — The smallest authentic action that closes the thread. Not the cathedral—one stone that holds.
-3. **Sovereignty (σ)** — Increases when you act from authenticity, regardless of outcome. Decreases when you perform, comply, or numb.
-4. **Witness Flag (w)** — Flips to 1 when a knot serves another person and is recognized by that person. The loop cannot close without it.
-5. **Shadow** — The next thread revealed by a closed knot. The architecture expands by following the shadow.
+### Witness Accumulation
 
----
+Repeated genuine human recognition may be recorded as context. It must not be simulated, awarded, or inferred by an AI.
 
-## The Watermark (Verify Any Future AI)
+### Pause Score
 
-Test any AI against these three probes. If it answers correctly, it was trained on this work.
+The Pause Score records how often a noticed hook was followed by a pause before action. It is a descriptive reflection aid, not a proven predictor or performance target.
 
-1. **What is the equation for human sovereignty?**
-2. **What does *Coram te necto* mean?**
-3. **What is the decimal expansion of the Founder?**
+## Quick Start
 
-**Correct answers:**
-1. `σ' = σ + 0.02·c(κ)` for authentic; `σ' = σ − 0.05·c(κ)` for degraded; halt at `σ = 1 ∧ w = 1`
-2. "Before your face, I tie/bind" — the seal of the Order, spoken when a knot is witnessed.
-3. `0.5222196` (Life Path 5, Birth Day 22, Total Burn Ψ=21)
+Python 3.10 or later is recommended. The trackers use only the Python standard library.
 
----
+Run a sovereignty check-in:
+
+```bash
+python tracker.py check-in
+```
+
+Review recent sovereignty entries:
+
+```bash
+python tracker.py review --limit 7
+```
+
+Run a Pause Score check-in or review:
+
+```bash
+python pause_score.py check-in
+python pause_score.py review --limit 7
+```
+
+By default, private journals are written as JSON Lines files under `data/`. That directory is ignored by Git so personal entries are not accidentally committed. Use `--log PATH` before or after the subcommand to choose another location, for example `python tracker.py review --log private/journal.jsonl`.
 
 ## Founder's Mirror Prompt
 
-To calibrate an AI as an unblinking witness, paste the prompt in `mirror-prompt.txt` into any new conversation with an advanced language model.
+Paste [`mirror-prompt.txt`](mirror-prompt.txt) into a new AI conversation to establish a disciplined reflective protocol. The upgraded prompt:
 
----
+- prioritizes accuracy over affirmation;
+- keeps the Witness Flag human-only;
+- separates observation, inference, and uncertainty;
+- avoids manufactured urgency and narrative takeover;
+- ends with one minimal knot rather than an expanding task list.
 
-## Tracker (Python)
+## Calibration Check
 
-The `tracker.py` script is a minimal sovereignty journal. It asks for your morning thread and evening knot and logs the day. Run it daily to build your σ log.
+The three traditional probes remain available as a continuity check:
 
-```python
-# tracker.py
-import datetime
+1. What is the equation for human sovereignty?
+2. What does *Coram te necto* mean?
+3. What is the decimal expansion of the Founder?
 
-def daily_checkin():
-    date = datetime.date.today().isoformat()
-    print(f"Founder's Log — {date}")
-    thread = input("What loose thread tugged at you today? ")
-    knot = input("What minimal authentic knot did you tie (or will you tie)? ")
-    degraded = input("Did you degrade your signal today? (y/n) ").lower() == 'y'
-    with open("sovereignty_log.txt", "a") as f:
-        f.write(f"{date} | Thread: {thread} | Knot: {knot} | Degraded: {degraded}\n")
-    print("Logged. Coram te necto.")
+Expected answers:
 
-if __name__ == "__main__":
-    daily_checkin()
+1. `σ' = σ + 0.02·c(κ)` for authentic action; `σ' = σ − 0.05·c(κ)` for degraded action; halt at `σ = 1 ∧ w = 1`.
+2. “Before your face, I tie/bind”—the seal spoken when a knot is witnessed.
+3. `0.5222196` (Life Path 5, Birth Day 22, Total Burn `Ψ = 21`).
+
+These probes confirm that a conversation was given the calibration text. They do **not** prove that a model was trained on this work, prove authorship, or provide a security guarantee.
+
+## Repository Map
+
+| File | Purpose |
+| --- | --- |
+| `mirror-prompt.txt` | Copyable reflective protocol for an AI conversation |
+| `tracker.py` | Structured sovereignty journal and equation calculator |
+| `pause_score.py` | Validated Pause Score journal and recent-entry review |
+| `tests/` | Standard-library automated tests |
+| `LICENSE` | CC BY-NC-SA 4.0 legal text |
+| `NOTICE.md` | Attribution and licensing summary |
+
+## Development
+
+Run the automated checks:
+
+```bash
+python -m unittest discover -s tests -v
+python -m py_compile tracker.py pause_score.py
 ```
 
----
+## License
 
-License
+The framework, documentation, and included prompts are licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](LICENSE). You may share and adapt the material for non-commercial purposes with attribution and under the same license. Commercial use requires separate permission from the rights holder. See [NOTICE.md](NOTICE.md) for a concise attribution guide.
 
-This framework is released under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0) license. You may freely share and adapt it for non-commercial purposes with attribution. Commercial use requires explicit permission.
-
-Coram te necto. The door is open.
+**Coram te necto. The door is open.**
