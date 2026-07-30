@@ -1,70 +1,147 @@
-import datetime
-import os
+"""Private Pause Score companion for the Closed Loop Protocol."""
 
-# Pause Score Tracker
-# Companion to the Founder's Sovereignty Equation
-# Tracks hooks caught and pauses taken
+from __future__ import annotations
 
-LOG_FILE = "pause_score_log.txt"
+import argparse
+import json
+import math
+from dataclasses import asdict, dataclass
+from datetime import date
+from pathlib import Path
+from typing import Callable, Iterable
 
-def log_pause_score(hooks, pauses):
-    """
-    Log a daily pause score entry.
-    hooks: total hooks/tugs noticed today
-    pauses: total hooks where you paused before acting
-    """
-    score = (pauses / hooks * 100) if hooks > 0 else 0
-    date = datetime.datetime.now().strftime("%Y-%m-%d")
-    entry = f"{date} | Hooks: {hooks} | Pauses: {pauses} | Pause%: {score:.1f}\n"
+DEFAULT_LOG = Path("data/pause_score_log.jsonl")
 
-    with open(LOG_FILE, "a") as f:
-        f.write(entry)
 
-    print(f"Logged: {entry.strip()}")
-    return score
+@dataclass(frozen=True)
+class PauseEntry:
+    date: str
+    hooks: int
+    pauses: int
+    score: float
+    note: str
 
-def daily_checkin():
-    """
-    Interactive daily check-in prompt.
-    """
-    print("\n--- Pause Score Check-In ---")
-    hooks = input("How many hooks/tugs did you notice today? (enter number): ")
-    pauses = input("How many did you pause on before acting? (enter number): ")
+    def __post_init__(self) -> None:
+        expected = calculate_pause_score(self.hooks, self.pauses)
+        if not math.isclose(self.score, expected, abs_tol=1e-12):
+            raise ValueError("score does not match hooks and pauses")
 
-    try:
-        hooks = int(hooks.strip())
-        pauses = int(pauses.strip())
-    except ValueError:
-        print("Please enter valid numbers.")
+
+def calculate_pause_score(hooks: int, pauses: int) -> float:
+    """Return a percentage after validating a possible daily count."""
+    if isinstance(hooks, bool) or isinstance(pauses, bool):
+        raise ValueError("hooks and pauses must be whole numbers")
+    if not isinstance(hooks, int) or not isinstance(pauses, int):
+        raise ValueError("hooks and pauses must be whole numbers")
+    if hooks < 0 or pauses < 0:
+        raise ValueError("hooks and pauses cannot be negative")
+    if pauses > hooks:
+        raise ValueError("pauses cannot exceed noticed hooks")
+    return 0.0 if hooks == 0 else pauses / hooks * 100
+
+
+def append_entry(entry: PauseEntry, log_path: Path = DEFAULT_LOG) -> None:
+    path = Path(log_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8", newline="\n") as handle:
+        json.dump(asdict(entry), handle, ensure_ascii=False, separators=(",", ":"))
+        handle.write("\n")
+
+
+def load_entries(log_path: Path = DEFAULT_LOG) -> list[PauseEntry]:
+    path = Path(log_path)
+    if not path.exists():
+        return []
+    entries: list[PauseEntry] = []
+    with path.open("r", encoding="utf-8") as handle:
+        for line_number, line in enumerate(handle, start=1):
+            if not line.strip():
+                continue
+            try:
+                entries.append(PauseEntry(**json.loads(line)))
+            except (json.JSONDecodeError, TypeError, ValueError) as error:
+                raise ValueError(f"Invalid entry at {path}:{line_number}") from error
+    return entries
+
+
+def log_pause_score(
+    hooks: int,
+    pauses: int,
+    note: str = "",
+    log_path: Path = DEFAULT_LOG,
+) -> PauseEntry:
+    score = calculate_pause_score(hooks, pauses)
+    entry = PauseEntry(date.today().isoformat(), hooks, pauses, score, note.strip())
+    append_entry(entry, log_path)
+    return entry
+
+
+def _ask_count(prompt: str, input_fn: Callable[[str], str] = input) -> int:
+    while True:
+        raw = input_fn(prompt).strip()
+        try:
+            value = int(raw)
+            if value < 0:
+                raise ValueError
+            return value
+        except ValueError:
+            print("Please enter a whole number of 0 or greater.")
+
+
+def daily_checkin(
+    log_path: Path = DEFAULT_LOG,
+    input_fn: Callable[[str], str] = input,
+) -> PauseEntry:
+    print("--- Pause Score Check-In ---")
+    while True:
+        hooks = _ask_count("Hooks/tugs noticed today: ", input_fn)
+        pauses = _ask_count("Hooks followed by a pause: ", input_fn)
+        try:
+            calculate_pause_score(hooks, pauses)
+            break
+        except ValueError as error:
+            print(f"{error}. Please enter the counts again.")
+    note = input_fn("Reflection note (optional): ").strip()
+    entry = log_pause_score(hooks, pauses, note, log_path)
+    print(f"Logged Pause Score: {entry.score:.1f}%")
+    return entry
+
+
+def render_review(entries: Iterable[PauseEntry]) -> str:
+    rows = list(entries)
+    if not rows:
+        return "No Pause Score entries found."
+    lines = ["--- Pause Score Review ---"]
+    for entry in rows:
+        suffix = f" | {entry.note}" if entry.note else ""
+        lines.append(
+            f"{entry.date} | hooks {entry.hooks} | pauses {entry.pauses} "
+            f"| {entry.score:.1f}%{suffix}"
+        )
+    return "\n".join(lines)
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--log", type=Path, default=DEFAULT_LOG, help="JSONL journal path")
+    subparsers = parser.add_subparsers(dest="command")
+    check_in = subparsers.add_parser("check-in", help="record one private Pause Score entry")
+    check_in.add_argument("--log", type=Path, default=argparse.SUPPRESS)
+    review = subparsers.add_parser("review", help="show recent entries")
+    review.add_argument("--log", type=Path, default=argparse.SUPPRESS)
+    review.add_argument("--limit", type=int, default=7, help="number of entries to show")
+    return parser
+
+
+def main() -> None:
+    args = build_parser().parse_args()
+    if args.command in {None, "check-in"}:
+        daily_checkin(args.log)
         return
+    if args.limit < 1:
+        raise SystemExit("--limit must be at least 1")
+    print(render_review(load_entries(args.log)[-args.limit :]))
 
-    score = log_pause_score(hooks, pauses)
-    print(f"Pause Score today: {score:.1f}%")
-
-def weekly_review():
-    """
-    Display a summary of the last 7 days of pause scores.
-    """
-    if not os.path.exists(LOG_FILE):
-        print("No pause score log found.")
-        return
-
-    with open(LOG_FILE, "r") as f:
-        lines = f.readlines()[-7:]  # last 7 entries
-
-    print("\n--- Weekly Pause Score Review ---")
-    for line in lines:
-        print(line.strip())
 
 if __name__ == "__main__":
-    print("Pause Score Tracker")
-    print("1. Daily Check-In")
-    print("2. Weekly Review")
-    choice = input("Choose an option (1 or 2): ")
-
-    if choice == "1":
-        daily_checkin()
-    elif choice == "2":
-        weekly_review()
-    else:
-        print("Invalid choice.")
+    main()

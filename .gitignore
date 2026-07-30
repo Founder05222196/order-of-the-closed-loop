@@ -1,0 +1,18 @@
+# Python caches and environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Private journals and local exports
+data/
+sovereignty_log.txt
+pause_score_log.txt
+*.jsonl
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
